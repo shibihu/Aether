@@ -6,185 +6,218 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
-import androidx.compose.foundation.text.BasicTextField
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
+import androidx.compose.foundation.layout.safeDrawing
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.DateRange
+import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.List
+import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material3.Icon
+import androidx.compose.material3.NavigationBar
+import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.NavigationBarItemDefaults
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.SolidColor
-import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.aether.executor.core.execution.ExecutionStatus
-import com.aether.executor.core.runtime.LogLevel
+import com.aether.executor.data.model.AppSection
+import com.aether.executor.ui.components.statusColor
+import com.aether.executor.ui.components.statusLabel
+import com.aether.executor.ui.screens.EditorScreen
+import com.aether.executor.ui.screens.HistoryScreen
+import com.aether.executor.ui.screens.ScriptsScreen
+import com.aether.executor.ui.screens.SettingsScreen
+import com.aether.executor.ui.theme.AetherPalette
 
-private val Navy = Color(0xFF07111F)
-private val Panel = Color(0xFF0D1B2A)
-private val PanelAlt = Color(0xFF13263A)
-private val Cyan = Color(0xFF42D9F5)
-private val Muted = Color(0xFF8EA4B8)
-private val Green = Color(0xFF5CE0A0)
-private val Red = Color(0xFFFF6B78)
-private val Amber = Color(0xFFFFC66D)
+private data class NavItem(
+    val section: AppSection,
+    val label: String,
+    val icon: ImageVector
+)
+
+private val navItems = listOf(
+    NavItem(AppSection.EDITOR, "Editor", Icons.Filled.Edit),
+    NavItem(AppSection.SCRIPTS, "Scripts", Icons.Filled.List),
+    NavItem(AppSection.HISTORY, "History", Icons.Filled.DateRange),
+    NavItem(AppSection.SETTINGS, "Settings", Icons.Filled.Settings)
+)
 
 @Composable
 fun AetherApp(vm: AetherViewModel = viewModel()) {
     val state by vm.uiState.collectAsState()
-    val running = state.status == ExecutionStatus.RUNNING
+    val snackbarHostState = remember { SnackbarHostState() }
 
-    Surface(modifier = Modifier.fillMaxSize(), color = Navy) {
-        Column(
-            modifier = Modifier.fillMaxSize().padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp)
-        ) {
-            Header(state.status)
+    LaunchedEffect(state.message) {
+        val message = state.message
+        if (message != null) {
+            snackbarHostState.currentSnackbarData?.dismiss()
+            snackbarHostState.showSnackbar(message)
+            vm.consumeMessage()
+        }
+    }
 
-            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                Button(
-                    onClick = vm::execute,
-                    enabled = !running,
-                    modifier = Modifier.weight(1f).height(48.dp),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = Cyan,
-                        contentColor = Navy,
-                        disabledContainerColor = PanelAlt,
-                        disabledContentColor = Muted
-                    ),
-                    shape = RoundedCornerShape(12.dp)
+    Surface(modifier = Modifier.fillMaxSize(), color = AetherPalette.Navy) {
+        Scaffold(
+            containerColor = AetherPalette.Navy,
+            contentWindowInsets = WindowInsets.safeDrawing,
+            snackbarHost = { SnackbarHost(snackbarHostState) },
+            topBar = { BrandBar(state) },
+            bottomBar = {
+                NavigationBar(
+                    containerColor = AetherPalette.Panel,
+                    contentColor = AetherPalette.Text,
+                    tonalElevation = 0.dp
                 ) {
-                    Text(if (running) "RUNNING" else "▶ EXECUTE", fontWeight = FontWeight.ExtraBold, fontSize = 12.sp)
-                }
-                Button(
-                    onClick = vm::stop,
-                    enabled = running,
-                    modifier = Modifier.weight(1f).height(48.dp),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = Color(0xFF512B39),
-                        contentColor = Color(0xFFFFA6B0),
-                        disabledContainerColor = PanelAlt,
-                        disabledContentColor = Muted
-                    ),
-                    shape = RoundedCornerShape(12.dp)
-                ) {
-                    Text("■ STOP", fontWeight = FontWeight.Bold, fontSize = 12.sp)
-                }
-            }
-
-            SectionTitle("SCRIPT EDITOR", "JAVASCRIPT")
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .weight(1.25f)
-                    .background(Panel, RoundedCornerShape(14.dp))
-                    .padding(14.dp)
-            ) {
-                BasicTextField(
-                    value = state.source,
-                    onValueChange = vm::updateSource,
-                    modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState()),
-                    textStyle = TextStyle(
-                        color = Color(0xFFD7E6F5),
-                        fontFamily = FontFamily.Monospace,
-                        fontSize = 13.sp,
-                        lineHeight = 20.sp
-                    ),
-                    cursorBrush = SolidColor(Cyan)
-                )
-            }
-
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                SectionTitle("CONSOLE", "LIVE OUTPUT")
-                Spacer(Modifier.weight(1f))
-                TextButton(onClick = vm::clearConsole) {
-                    Text("CLEAR", color = Muted, fontSize = 11.sp)
-                }
-            }
-
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .weight(0.85f)
-                    .background(Panel, RoundedCornerShape(14.dp))
-                    .padding(12.dp)
-                    .verticalScroll(rememberScrollState()),
-                verticalArrangement = Arrangement.spacedBy(7.dp)
-            ) {
-                if (state.console.isEmpty()) {
-                    Text("Console is empty. Execute a script to see output.", color = Muted, fontSize = 12.sp)
-                } else {
-                    state.console.forEach { entry ->
-                        val color = when (entry.level) {
-                            LogLevel.INFO -> Color(0xFFBBD3E8)
-                            LogLevel.WARNING -> Amber
-                            LogLevel.ERROR -> Red
-                        }
-                        Text(
-                            "${entry.timestamp}  ${entry.level.name}  ${entry.message}",
-                            color = color,
-                            fontFamily = FontFamily.Monospace,
-                            fontSize = 11.sp
+                    navItems.forEach { item ->
+                        NavigationBarItem(
+                            selected = state.section == item.section,
+                            onClick = { vm.selectSection(item.section) },
+                            icon = {
+                                Icon(
+                                    imageVector = item.icon,
+                                    contentDescription = item.label,
+                                    modifier = Modifier.size(20.dp)
+                                )
+                            },
+                            label = {
+                                Text(
+                                    text = item.label,
+                                    fontSize = 10.sp,
+                                    fontWeight = FontWeight.SemiBold
+                                )
+                            },
+                            colors = NavigationBarItemDefaults.colors(
+                                selectedIconColor = AetherPalette.Cyan,
+                                selectedTextColor = AetherPalette.Cyan,
+                                indicatorColor = AetherPalette.Cyan.copy(alpha = 0.12f),
+                                unselectedIconColor = AetherPalette.Muted,
+                                unselectedTextColor = AetherPalette.Muted
+                            )
                         )
                     }
                 }
             }
+        ) { padding ->
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(padding)
+            ) {
+                when (state.section) {
+                    AppSection.EDITOR -> {
+                        if (!state.tabsReady) {
+                            Box(
+                                modifier = Modifier.fillMaxSize(),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Text(
+                                    text = "Restoring session…",
+                                    color = AetherPalette.Muted,
+                                    fontSize = 13.sp
+                                )
+                            }
+                        } else {
+                            EditorScreen(
+                                state = state,
+                                onSelectTab = vm::selectTab,
+                                onNewTab = vm::newTab,
+                                onCloseTab = vm::closeTab,
+                                onRenameTab = vm::renameTab,
+                                onContentChange = vm::updateTabContent,
+                                onSave = vm::saveActiveTab,
+                                onExecute = vm::execute,
+                                onStop = vm::stop,
+                                onClearConsole = vm::clearConsole
+                            )
+                        }
+                    }
 
+                    AppSection.SCRIPTS -> ScriptsScreen(
+                        scripts = state.scripts,
+                        onCreate = vm::createScript,
+                        onOpen = vm::openScript,
+                        onRename = vm::renameScript,
+                        onDelete = vm::deleteScript
+                    )
+
+                    AppSection.HISTORY -> HistoryScreen(
+                        records = state.history,
+                        onReopen = vm::reopenHistory,
+                        onDelete = vm::deleteHistory,
+                        onClear = vm::clearHistory
+                    )
+
+                    AppSection.SETTINGS -> SettingsScreen(
+                        settings = state.settings,
+                        onChange = vm::updateSettings
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun BrandBar(state: AetherUiState) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(AetherPalette.NavyDeep)
+            .padding(horizontal = 14.dp, vertical = 8.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        Box(
+            modifier = Modifier
+                .size(7.dp)
+                .background(
+                    if (state.isRunning) AetherPalette.Green else AetherPalette.Cyan,
+                    CircleShape
+                )
+        )
+        Column(modifier = Modifier.weight(1f)) {
             Text(
-                "M1 • LOCAL JAVASCRIPT RUNTIME • NO ROOT REQUIRED",
-                color = Muted,
-                fontSize = 9.sp,
-                letterSpacing = 1.sp,
-                modifier = Modifier.align(Alignment.CenterHorizontally)
+                text = "AETHER // EXECUTOR",
+                color = AetherPalette.Cyan,
+                fontSize = 12.sp,
+                fontWeight = FontWeight.ExtraBold,
+                letterSpacing = 2.sp
+            )
+            Text(
+                text = "Local QuickJS sandbox",
+                color = AetherPalette.Muted,
+                fontSize = 8.sp,
+                fontFamily = FontFamily.Monospace,
+                letterSpacing = 0.6.sp
             )
         }
-    }
-}
-
-@Composable
-private fun Header(status: ExecutionStatus) {
-    Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-        Column(modifier = Modifier.weight(1f)) {
-            Text("AETHER", color = Color.White, fontSize = 22.sp, fontWeight = FontWeight.Black, letterSpacing = 2.sp)
-            Text("EXECUTOR  /  M1 FOUNDATION", color = Cyan, fontSize = 10.sp, letterSpacing = 1.5.sp)
-        }
-        val (label, color) = when (status) {
-            ExecutionStatus.RUNNING -> "RUNNING" to Cyan
-            ExecutionStatus.COMPLETED -> "COMPLETED" to Green
-            ExecutionStatus.STOPPED -> "STOPPED" to Amber
-            ExecutionStatus.FAILED -> "FAILED" to Red
-            ExecutionStatus.IDLE -> "IDLE" to Muted
-        }
         Text(
-            "● $label",
-            color = color,
-            fontSize = 10.sp,
+            text = statusLabel(state.status),
+            color = statusColor(state.status),
+            fontSize = 9.sp,
             fontWeight = FontWeight.Bold,
-            modifier = Modifier.background(PanelAlt, RoundedCornerShape(50)).padding(horizontal = 10.dp, vertical = 7.dp)
+            letterSpacing = 1.sp
         )
-    }
-}
-
-@Composable
-private fun SectionTitle(title: String, tag: String) {
-    Row(verticalAlignment = Alignment.CenterVertically) {
-        Text(title, color = Color.White, fontSize = 11.sp, fontWeight = FontWeight.Bold, letterSpacing = 1.sp)
-        Spacer(Modifier.weight(1f))
-        Text(tag, color = Muted, fontSize = 9.sp, letterSpacing = 1.sp)
+        Spacer(modifier = Modifier.size(2.dp))
     }
 }

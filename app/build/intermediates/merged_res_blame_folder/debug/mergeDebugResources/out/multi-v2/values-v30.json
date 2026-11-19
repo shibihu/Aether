@@ -1,10 +1,10 @@
 {
     "logs": [
         {
-            "outputFile": "com.aether.executor.app-mergeDebugResources-39:/values-v30/values-v30.xml",
+            "outputFile": "com.aether.executor.app-mergeDebugResources-41:/values-v30/values-v30.xml",
             "map": [
                 {
-                    "source": "/data/data/com.termux/files/home/.gradle/caches/8.13/transforms/c4e38b8b184bac23288413c2559f6fb3/transformed/material3/res/values-v30/values-v30.xml",
+                    "source": "/data/data/com.termux/files/home/.gradle/caches/8.13/transforms/e9aef3f059be0b5f184d4930c145b8ea/transformed/material3/res/values-v30/values-v30.xml",
                     "from": {
                         "startLines": "2",
                         "startColumns": "4",

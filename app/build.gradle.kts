@@ -12,11 +12,15 @@ android {
         applicationId = "com.aether.executor"
         minSdk = 26
         targetSdk = 35
-        versionCode = 1
-        versionName = "0.1.0"
+        versionCode = 2
+        versionName = "0.2.0"
     }
 
     buildFeatures { compose = true }
+
+    androidResources {
+        noCompress += "js"
+    }
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
@@ -36,12 +40,17 @@ dependencies {
     implementation(libs.androidx.compose.ui.tooling.preview)
     implementation(libs.androidx.compose.material3)
     implementation(libs.androidx.compose.foundation)
+    implementation(libs.androidx.compose.material.icons.core)
     implementation(libs.androidx.lifecycle.runtime.ktx)
+    implementation(libs.androidx.lifecycle.runtime.compose)
     implementation(libs.androidx.lifecycle.viewmodel.compose)
     implementation(libs.quickjs.android)
     implementation(libs.kotlinx.coroutines.android)
+    implementation(libs.sora.editor)
 
     debugImplementation(libs.androidx.compose.ui.tooling)
+
+    testImplementation(libs.junit)
 }
 
 kotlin {
