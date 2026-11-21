@@ -1,16 +1,16 @@
-#Thu Nov 19 12:37:39 GMT 2026
-base.0=/root/AetherExecutor/app/build/intermediates/dex/debug/mergeExtDexDebug/classes.dex
-base.1=/root/AetherExecutor/app/build/intermediates/dex/debug/mergeProjectDexDebug/0/classes.dex
-base.10=/root/AetherExecutor/app/build/intermediates/dex/debug/mergeProjectDexDebug/9/classes.dex
-base.11=/root/AetherExecutor/app/build/intermediates/dex/debug/mergeExtDexDebug/classes2.dex
-base.2=/root/AetherExecutor/app/build/intermediates/dex/debug/mergeProjectDexDebug/11/classes.dex
-base.3=/root/AetherExecutor/app/build/intermediates/dex/debug/mergeProjectDexDebug/12/classes.dex
-base.4=/root/AetherExecutor/app/build/intermediates/dex/debug/mergeProjectDexDebug/14/classes.dex
-base.5=/root/AetherExecutor/app/build/intermediates/dex/debug/mergeProjectDexDebug/3/classes.dex
-base.6=/root/AetherExecutor/app/build/intermediates/dex/debug/mergeProjectDexDebug/4/classes.dex
-base.7=/root/AetherExecutor/app/build/intermediates/dex/debug/mergeProjectDexDebug/5/classes.dex
-base.8=/root/AetherExecutor/app/build/intermediates/dex/debug/mergeProjectDexDebug/6/classes.dex
-base.9=/root/AetherExecutor/app/build/intermediates/dex/debug/mergeProjectDexDebug/8/classes.dex
+#Fri Nov 20 11:00:39 GMT 2026
+base.0=/data/data/com.termux/files/home/AetherExecutor/app/build/intermediates/dex/debug/mergeExtDexDebug/classes.dex
+base.1=/data/data/com.termux/files/home/AetherExecutor/app/build/intermediates/dex/debug/mergeProjectDexDebug/0/classes.dex
+base.10=/data/data/com.termux/files/home/AetherExecutor/app/build/intermediates/dex/debug/mergeProjectDexDebug/9/classes.dex
+base.11=/data/data/com.termux/files/home/AetherExecutor/app/build/intermediates/dex/debug/mergeExtDexDebug/classes2.dex
+base.2=/data/data/com.termux/files/home/AetherExecutor/app/build/intermediates/dex/debug/mergeProjectDexDebug/11/classes.dex
+base.3=/data/data/com.termux/files/home/AetherExecutor/app/build/intermediates/dex/debug/mergeProjectDexDebug/12/classes.dex
+base.4=/data/data/com.termux/files/home/AetherExecutor/app/build/intermediates/dex/debug/mergeProjectDexDebug/14/classes.dex
+base.5=/data/data/com.termux/files/home/AetherExecutor/app/build/intermediates/dex/debug/mergeProjectDexDebug/3/classes.dex
+base.6=/data/data/com.termux/files/home/AetherExecutor/app/build/intermediates/dex/debug/mergeProjectDexDebug/4/classes.dex
+base.7=/data/data/com.termux/files/home/AetherExecutor/app/build/intermediates/dex/debug/mergeProjectDexDebug/5/classes.dex
+base.8=/data/data/com.termux/files/home/AetherExecutor/app/build/intermediates/dex/debug/mergeProjectDexDebug/6/classes.dex
+base.9=/data/data/com.termux/files/home/AetherExecutor/app/build/intermediates/dex/debug/mergeProjectDexDebug/8/classes.dex
 path.0=classes.dex
 path.1=0/classes.dex
 path.10=9/classes.dex
